@@ -72,9 +72,9 @@ offsets[6] = tetri.offset3;
 offsets[7] = 0;
 ```
 Uses the created array to...
-1. Checks the placement of each tile to ensure the shape of each tile post-conversion is the same (protects against overflow over the right and left edges)
-2. There is no placement of the tile beyond the size of the current square being assessed
-3. There is no placement on a space that is occupied by another tile
+ 1. Checks the placement of each tile to ensure the shape of each tile post-conversion is the same (protects against overflow over the right and left edges)
+ 2. There is no placement of the tile beyond the size of the current square being assessed
+ 3. There is no placement on a space that is occupied by another tile
 ```
 if (((offsets[o_i] / g_size - sa_i / g_size) != (offsets[o_i + 4] / 4))
 				|| ((offsets[o_i]) >= (g_size * g_size))
