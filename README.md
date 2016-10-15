@@ -40,11 +40,11 @@ typedef struct		s_offsets
 ## Placing tetrominos
 Validity of placment is determined by conversion of offsets in a '4 by 4' format to a 'X by X' array via the ```offset_detective```. When assessing placement at each size of square the validity is determined by ensuring no overflow of the edges of the square and no conflict with tiles that have already been placed.
 ### ```offset_detective```
-Converts ROWS from a 4 by 4 input to another size of square:
+Converts **ROWS** from a 4 by 4 input to another size of square:
 ```
 offset / 4 * g_size
 ```
-Converts COLUMNS from a 4 by 4 input to another size of square:
+Converts **COLUMNS** from a 4 by 4 input to another size of square:
 ```
 offset % 4 + sa_i
 ```
