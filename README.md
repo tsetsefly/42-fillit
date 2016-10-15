@@ -1,26 +1,44 @@
-# 42-fillit
+# Fillit
+
+TLDR = [Tetromino](https://en.wikipedia.org/wiki/Tetromino) smallest square tiling algorithm.
+
+[PDF](https://github.com/tsetsefly/42-fillit/blob/master/fillit.en.pdf) for the assignment
 
 ## Algorithm
 Basic Recursive Backtracking
 ```
+// base case: when the number of spaces in the square - 4 * number of tetrominos placed is expected (means all tiles have been placed in a successful solution)
 if (count_empty_spaces(solution_arr) == g_spaces)
-		return (1);
-	sa_i = 0;
-	while (solution_arr[sa_i])
+	return (1);
+	
+// recursive case: moves through the solution array and tries to place the tiles if there are no conflicts. If successful it will recursively call for the next tile in the input array. Otherwise, it will remove the tile.
+sa_i = 0;
+while (solution_arr[sa_i])
+{
+	if (valid_placement(solution_arr, sa_i, input_arr[ia_i]))
 	{
-		if (valid_placement(solution_arr, sa_i, input_arr[ia_i]))
-		{
-			place_tetri(solution_arr, sa_i, input_arr[ia_i]);
-			if (solve(solution_arr, input_arr, ++ia_i))
-				return (1);
-			remove_tetri(solution_arr, sa_i, input_arr[--ia_i]);
-		}
-		sa_i++;
+		place_tetri(solution_arr, sa_i, input_arr[ia_i]);
+		if (solve(solution_arr, input_arr, ++ia_i))
+			return (1);
+		remove_tetri(solution_arr, sa_i, input_arr[--ia_i]);
 	}
+	sa_i++;
+}
 ```
-## Solution Arr
-1D array
-### Valid Placement
+## Data structure
+We decided to have our tiles stored as 1D char arrays and for our solution array to be 1D as well. Each tile is identified by offsets from top-left placement in a '4x4' (linear 16 cell in 1D) array.
+```
+typedef struct		s_offsets
+{
+	int				offset0;
+	int				offset1;
+	int				offset2;
+	int				offset3;
+	char			letter;
+}					t_offsets;
+```
+### Valid placement
+Validity of placment is determined by conversion of offsets in a '4 by 4' format to a 'X by X' array via the ```offset_detective```. When assessing placement at each size of square the validity is determined by ensuring no overflow of the edges of the square and no conflict with tiles that have already been placed.
 ```
 static int	offset_detective(int sa_i, int offset, int zero_offset)
 {
