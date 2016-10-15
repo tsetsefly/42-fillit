@@ -37,16 +37,20 @@ typedef struct		s_offsets
 	char			letter;
 }					t_offsets;
 ```
-## Valid placement
+## Placing tetrominos
 Validity of placment is determined by conversion of offsets in a '4 by 4' format to a 'X by X' array via the ```offset_detective```. When assessing placement at each size of square the validity is determined by ensuring no overflow of the edges of the square and no conflict with tiles that have already been placed.
-
+### ```offset_detective```
+Converts ROWS from a 4 by 4 input to another size of square:
 ```
-// converts ROWS from a 4 by 4 input to another size of square
 offset / 4 * g_size
-// converts COLUMNS from a 4 by 4 input to another size of square
+```
+Converts COLUMNS from a 4 by 4 input to another size of square:
+```
 offset % 4 + sa_i
-// deals with tiles that have an initial offset position of 1 or 2 (tiles that don't touch the top-left corner of a 4 by 4 input)
--zero_offset
+```
+Deals with tiles that have an initial offset position of 1 or 2 (tiles that don't touch the top-left corner of a 4 by 4 input):
+```
+- zero_offset
 ```
 ```
 static int	offset_detective(int sa_i, int offset, int zero_offset)
@@ -55,7 +59,30 @@ static int	offset_detective(int sa_i, int offset, int zero_offset)
 	return (offset);
 }
 ```
-
+### ```valid_placement```
+Creates an array to compare the newly calculated offset positions for the current size of square against the original offsets for the 4 by 4 input:
+```
+offsets[0] = offset_detective(sa_i, tetri.offset1, tetri.offset0);
+offsets[1] = offset_detective(sa_i, tetri.offset2, tetri.offset0);
+offsets[2] = offset_detective(sa_i, tetri.offset3, tetri.offset0);
+offsets[3] = 0;
+offsets[4] = tetri.offset1;
+offsets[5] = tetri.offset2;
+offsets[6] = tetri.offset3;
+offsets[7] = 0;
+```
+Uses the created array to...
+1. Checks the placement of each tile to ensure the shape of each tile post-conversion is the same (protects against overflow over the right and left edges)
+2. There is no placement of the tile beyond the size of the current square being assessed
+3. There is no placement on a space that is occupied by another tile
+```
+if (((offsets[o_i] / g_size - sa_i / g_size) != (offsets[o_i + 4] / 4))
+				|| ((offsets[o_i]) >= (g_size * g_size))
+				|| solution_arr[sa_i] != '.'
+				|| solution_arr[offsets[o_i]] != '.')
+			return (0);
+		o_i++;
+```
 ```
 int			valid_placement(char *solution_arr, int sa_i, t_offsets tetri)
 {
@@ -84,6 +111,9 @@ int			valid_placement(char *solution_arr, int sa_i, t_offsets tetri)
 }
 ```
 ## Validation
+1. ```count_blocks```: ensures number of blocks per input section are 4
+2. ```touch_detective```: ensures that the continuousness of each tetromino. There should be 6 "connections" between the squares of each tetromino except for the square which has 8. This helps protect against false-positives when using the offset method of detection.
+3. ```examine_file```: ensures a valid input stream. One that has one newline separating each block, 4 newlines in each block... etc
 ```
 static int	count_blocks(char *row)
 {
