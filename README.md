@@ -37,15 +37,26 @@ typedef struct		s_offsets
 	char			letter;
 }					t_offsets;
 ```
-### Valid placement
+## Valid placement
 Validity of placment is determined by conversion of offsets in a '4 by 4' format to a 'X by X' array via the ```offset_detective```. When assessing placement at each size of square the validity is determined by ensuring no overflow of the edges of the square and no conflict with tiles that have already been placed.
+
+```
+// converts ROWS from a 4 by 4 input to another size of square
+offset / 4 * g_size
+// converts COLUMNS from a 4 by 4 input to another size of square
+offset % 4 + sa_i
+// deals with tiles that have an initial offset position of 1 or 2 (tiles that don't touch the top-left corner of a 4 by 4 input)
+-zero_offset
+```
 ```
 static int	offset_detective(int sa_i, int offset, int zero_offset)
 {
 	offset = offset / 4 * g_size + offset % 4 + sa_i - zero_offset;
 	return (offset);
 }
+```
 
+```
 int			valid_placement(char *solution_arr, int sa_i, t_offsets tetri)
 {
 	int		o_i;
